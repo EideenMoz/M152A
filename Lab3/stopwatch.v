@@ -104,10 +104,9 @@ module stopwatch(
   
   // --------------------------------------------------
   // Instantiate the Seven-Segment Multiplexer/Driver Module
-  // This module cycles through the four digits fast enough to appear steady,
-  // and if the stopwatch is in adjust mode, it blinks the selected portion.
+  // (Make sure the module name here matches the one in sev_segment.v.)
   // --------------------------------------------------
-  sevseg_mux display_inst (
+  sev_segment display_inst (
       .clk(clk_fast),
       .clk_blink(clk_blink),
       .adjust(sw_adj),  // Adjust mode: if high, blink the selected digits.
