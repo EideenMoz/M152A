@@ -20,12 +20,12 @@ module stopwatch(
   // --------------------------------------------------
   wire reset_debounced, pause_debounced;
   debounce db_reset(
-      .clk(clk_100MHz),
+      .clk(clk_fast),
       .btn_in(btn_reset),
       .btn_out(reset_debounced)
   );
   debounce db_pause(
-      .clk(clk_100MHz),
+      .clk(clk_fast),
       .btn_in(btn_pause),
       .btn_out(pause_debounced)
   );
@@ -33,12 +33,12 @@ module stopwatch(
   // (The slider switches sw_adj and sw_sel are assumed to be stable.)
   wire adjust_debounced, select_debounced;
   debounce db_asjust(
-    .clk(clk_100MHz),
+    .clk(clk_fast),
     .btn_in(sw_adj),
     .btn_out(adjust_debounced)
   );
   debounce db_select(
-    .clk(clk_100MHz),
+    .clk(clk_fast),
     .btn_in(sw_sel),
     .btn_out(select_debounced)  // Replace sw_sel with select_debounced below
   );
@@ -72,18 +72,18 @@ module stopwatch(
   // For the seconds counter:
   //   - In normal mode: use clk_1Hz.
   //   - In adjust mode for seconds (sw_adj & sw_sel): use clk_2Hz.
-  assign sec_clk = (sw_adj && sw_sel) ? clk_2Hz : clk_1Hz;
+  assign sec_clk = (adjust_debounced && select_debounced) ? clk_2Hz : clk_1Hz;
   
   // For the minutes counter:
   //   - In normal mode: update on the seconds counter's minute_enable pulse.
   //   - In adjust mode for minutes (sw_adj & ~sw_sel): use clk_2Hz.
-  assign min_clk = (sw_adj && ~sw_sel) ? clk_2Hz : minute_enable;
+  assign min_clk = (adjust_debounced && ~select_debounced) ? clk_2Hz : minute_enable;
   
   // Generate pause signals:
   // In adjust mode, freeze the unselected counter.
   wire sec_pause, min_pause;
-  assign sec_pause = sw_adj ? (~sw_sel) : pause_debounced;
-  assign min_pause = sw_adj ? ( sw_sel) : pause_debounced;
+  assign sec_pause = adjust_debounced ? (~select_debounced) : pause_debounced;      // Updated to take in debounced adjust switch
+  assign min_pause = adjust_debounced ? ( select_debounced) : pause_debounced;
   
   // --------------------------------------------------
   // Instantiate the Seconds Counter Module
@@ -124,8 +124,8 @@ module stopwatch(
   sev_segment display_inst (
       .clk(clk_fast),
       .clk_blink(clk_blink),
-      .adjust(sw_adj),  // Adjust mode: if high, blink the selected digits.
-      .sel(sw_sel),     // Select: 0 = minutes blink; 1 = seconds blink.
+      .adjust(adjust_debounced),  // Adjust mode: if high, blink the selected digits.
+      .sel(select_debounced),     // Select: 0 = minutes blink; 1 = seconds blink.
       .digits(digits),
       .seg(seg),
       .an(an)
