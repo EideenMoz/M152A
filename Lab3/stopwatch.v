@@ -20,12 +20,12 @@ module stopwatch(
   // --------------------------------------------------
   wire reset_debounced, pause_debounced;
   debounce db_reset(
-      .clk(clk_fast),
+      .clk(clk_100MHz),
       .btn_in(btn_reset),
       .btn_out(reset_debounced)
   );
   debounce db_pause(
-      .clk(clk_fast),
+      .clk(clk_100MHz),
       .btn_in(btn_pause),
       .btn_out(pause_debounced)
   );
@@ -33,12 +33,12 @@ module stopwatch(
   // (The slider switches sw_adj and sw_sel are assumed to be stable.)
   wire adjust_debounced, select_debounced;
   debounce db_asjust(
-    .clk(clk_fast),
+    .clk(clk_100MHz),
     .btn_in(sw_adj),
     .btn_out(adjust_debounced)
   );
   debounce db_select(
-    .clk(clk_fast),
+    .clk(clk_100MHz),
     .btn_in(sw_sel),
     .btn_out(select_debounced)  // Replace sw_sel with select_debounced below
   );
