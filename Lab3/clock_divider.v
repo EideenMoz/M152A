@@ -33,8 +33,8 @@ module clock_divider(
     localparam DIV_FAST  = 250000;
     
     // For the blink clock:
-    //   Example: choose 1 Hz blinking (half period = 0.5 sec = 50,000,000 cycles).
-    localparam DIV_BLINK = 50000000;
+    //   Example: choose 1.6 Hz blinking (half period = 0.3125 sec = 50,000,000 cycles).
+    localparam DIV_BLINK = 3125000;
 
     // =====================================================
     // Declare counters for each divider. (26 bits are sufficient here.)

@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 // stopwatch.v
 // Top-level module that connects the clock divider, counters,
 // debouncers, and seven-segment display driver to form the stopwatch.
@@ -13,34 +15,47 @@ module stopwatch(
 );
 
   // --------------------------------------------------
+  // Debounce the push buttons using the master clock (≈100 MHz)
+  // SHOULDE USE MASTER CLOCK HERE INSTEAD
+  // --------------------------------------------------
+  wire reset_debounced, pause_debounced;
+  debounce db_reset(
+      .clk(clk_100MHz),
+      .btn_in(btn_reset),
+      .btn_out(reset_debounced)
+  );
+  debounce db_pause(
+      .clk(clk_100MHz),
+      .btn_in(btn_pause),
+      .btn_out(pause_debounced)
+  );
+
+  // (The slider switches sw_adj and sw_sel are assumed to be stable.)
+  wire adjust_debounced, select_debounced;
+  debounce db_asjust(
+    .clk(clk_100MHz),
+    .btn_in(sw_adj),
+    .btn_out(adjust_debounced)
+  );
+  debounce db_select(
+    .clk(clk_100MHz),
+    .btn_in(sw_sel),
+    .btn_out(select_debounced)  // Replace sw_sel with select_debounced below
+  );
+
+  // --------------------------------------------------
   // Instantiate the Clock Divider
   // --------------------------------------------------
   wire clk_2Hz, clk_1Hz, clk_fast, clk_blink;
   clock_divider clk_div_inst (
       .clk_100MHz(clk_100MHz),
-      .reset(btn_reset),  // Can also debounce reset if desired
+      .reset(reset_debounced),  // Can also debounce reset if desired
       .clk_2Hz(clk_2Hz),
       .clk_1Hz(clk_1Hz),
       .clk_fast(clk_fast),
       .clk_blink(clk_blink)
   );
   
-  // --------------------------------------------------
-  // Debounce the push buttons using the fast clock (≈200 Hz)
-  // --------------------------------------------------
-  wire reset_debounced, pause_debounced;
-  debounce db_reset(
-      .clk(clk_fast),
-      .btn_in(btn_reset),
-      .btn_out(reset_debounced)
-  );
-  debounce db_pause(
-      .clk(clk_fast),
-      .btn_in(btn_pause),
-      .btn_out(pause_debounced)
-  );
-  // (The slider switches sw_adj and sw_sel are assumed to be stable.)
-
   // --------------------------------------------------
   // Choose the clock source for the counters based on ADJ and SEL.
   //

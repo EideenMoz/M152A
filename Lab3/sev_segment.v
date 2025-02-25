@@ -1,7 +1,9 @@
- // sevseg_mux.v
+`timescale 1ns / 1ps
+
+// sevseg_mux.v
 // Multiplexes four 4-bit digits to drive a four-digit seven-segment display.
 // Also implements blinking for the selected digit when in adjust mode.
-module sevseg_mux(
+module sev_segment(
     input  wire clk,          // Fast clock for multiplexing (≈200 Hz)
     input  wire clk_blink,    // Blink clock (≈1 Hz)
     input  wire adjust,       // Adjust mode flag (ADJ)

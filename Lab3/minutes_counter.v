@@ -29,7 +29,7 @@ module minutes_counter(
 
   // Instantiate the tens digit counter (modulo-6)
   // It increments only when ones_counter wraps from 9 to 0.
-  mod_6_counter tens_counter (
+  mod6_counter tens_counter (
     .clk(clk),
     .reset(reset),
     .en(ones_carry),
